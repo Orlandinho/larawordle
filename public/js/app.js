@@ -5185,7 +5185,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
-  wordLength: 4,
+  theWord: 'jesus',
   guessesAllowed: 4,
   currentRowIndex: 0,
   init: function init() {
@@ -5195,7 +5195,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       length: this.guessesAllowed
     }, function () {
       return Array.from({
-        length: _this.wordLength
+        length: _this.theWord.length
       }, function () {
         return new _Tile__WEBPACK_IMPORTED_MODULE_0__["default"]();
       });
@@ -5205,11 +5205,11 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
     if (/^[A-z]$/.test(key)) {
       this.fillTile(key);
     } else if (key === 'Enter') {
-      alert('I Pressed enter');
+      this.submitGuess();
     }
   },
   fillTile: function fillTile(key) {
-    var _iterator = _createForOfIteratorHelper(this.currentRow()),
+    var _iterator = _createForOfIteratorHelper(this.currentRow),
         _step;
 
     try {
@@ -5226,16 +5226,31 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
     } finally {
       _iterator.f();
     }
-
-    if (this.currentTileIndex === this.wordLength - 1) {
-      this.currentRowIndex++;
-      this.currentTileIndex = 0;
-    } else {
-      this.currentTileIndex++;
-    }
   },
-  currentRow: function currentRow() {
+
+  get currentRow() {
     return this.board[this.currentRowIndex];
+  },
+
+  get currentGuess() {
+    return this.currentRow.map(function (tile) {
+      return tile.letter;
+    }).join('');
+  },
+
+  submitGuess: function submitGuess() {
+    var guess = this.currentGuess;
+
+    if (this.currentGuess.length < this.theWord.length) {
+      return;
+    }
+
+    if (guess === this.theWord) {
+      alert("You win!");
+    } else {
+      alert("One less try");
+      this.currentRowIndex++;
+    }
   }
 });
 
