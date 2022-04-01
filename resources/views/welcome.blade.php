@@ -9,22 +9,14 @@
         <script src="{{ asset("js/app.js") }}" defer></script>
     </head>
     <body>
-        <div id="game">
-            <div class="row">
-                <div class="tile"></div>
-                <div class="tile"></div>
-                <div class="tile"></div>
-            </div>
-            <div class="row">
-                <div class="tile"></div>
-                <div class="tile"></div>
-                <div class="tile"></div>
-            </div>
-            <div class="row">
-                <div class="tile"></div>
-                <div class="tile"></div>
-                <div class="tile"></div>
-            </div>
+        <div id="game" x-data="{ wordLength: 4, guessesAllowed: 4 }">
+            <template x-for="row in Array.from({ length: guessesAllowed })">
+                <div class="row">
+                    <template x-for="tile in Array.from({ length: wordLength })">
+                        <div class="tile"></div>
+                    </template>
+                </div>
+            </template>
         </div>
     </body>
 </html>
