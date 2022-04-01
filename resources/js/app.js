@@ -1,6 +1,10 @@
 require('./bootstrap');
 
-let guessesAllowed = 4;
-let wordLength = 4;
+import Alpine from "alpinejs";
+import game from "./game";
 
-let grid = document.querySelector("#game");
+document.addEventListener('alpine:init', () => {
+    Alpine.data('game', () => game)
+})
+window.Alpine = Alpine;
+Alpine.start()

@@ -9,11 +9,14 @@
         <script src="{{ asset("js/app.js") }}" defer></script>
     </head>
     <body>
-        <div id="game" x-data="{ wordLength: 4, guessesAllowed: 4 }">
-            <template x-for="row in Array.from({ length: guessesAllowed })">
+        <div id="game"
+             x-data="game"
+             @keyup.window="onKeyPress($event.key)"
+        >
+            <template x-for="row in board">
                 <div class="row">
-                    <template x-for="tile in Array.from({ length: wordLength })">
-                        <div class="tile"></div>
+                    <template x-for="tile in row">
+                        <div class="tile" x-text="tile.letter"></div>
                     </template>
                 </div>
             </template>
