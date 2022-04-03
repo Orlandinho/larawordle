@@ -5186,8 +5186,10 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   theWord: 'jesus',
-  guessesAllowed: 4,
+  guessesAllowed: 3,
   currentRowIndex: 0,
+  state: 'active',
+  message: '',
   init: function init() {
     var _this = this;
 
@@ -5204,6 +5206,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
   onKeyPress: function onKeyPress(key) {
     if (/^[A-z]$/.test(key)) {
       this.fillTile(key);
+      this.message = '';
     } else if (key === 'Enter') {
       this.submitGuess();
     }
@@ -5245,12 +5248,28 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       return;
     }
 
+    this.refreshCurrentStatusForCurrentRow();
+
     if (guess === this.theWord) {
-      alert("You win!");
+      this.message = 'You win!';
+    } else if (this.guessesAllowed === this.currentRowIndex + 1) {
+      this.message = 'Game over';
+      this.state = 'complete';
     } else {
-      alert("One less try");
+      this.message = 'One less try';
       this.currentRowIndex++;
     }
+  },
+  refreshCurrentStatusForCurrentRow: function refreshCurrentStatusForCurrentRow() {
+    var _this2 = this;
+
+    this.currentRow.forEach(function (tile, index) {
+      tile.status = _this2.theWord.includes(tile.letter) ? 'present' : 'absent';
+
+      if (_this2.currentGuess[index] === _this2.theWord[index]) {
+        tile.status = 'correct';
+      }
+    });
   }
 });
 

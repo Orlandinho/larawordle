@@ -9,7 +9,29 @@ body {
 }
 
 #game {
-    background: #ccc;
+
+}
+
+output {
+    margin-top: 1rem;
+    font-size: 1.3rem;
+    text-align: center;
+    display: block;
+    position: fixed;
+    bottom: 1rem;
+    right: 1rem;
+}
+
+.tile.absent {
+    background: #666;
+}
+
+.tile.present {
+    background: yellow;
+}
+
+.tile.correct {
+    background: green;
 }
 
 .row {
