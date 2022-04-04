@@ -1,11 +1,23 @@
 import Tile from "./Tile";
 
 export default {
-    theWord: 'jesus',
+    theWord: 'davi',
     guessesAllowed: 3,
     currentRowIndex: 0,
     state: 'active',
     message: '',
+
+    get currentRow() {
+        return this.board[this.currentRowIndex];
+    },
+
+    get currentGuess() {
+        return this.currentRow.map(tile => tile.letter).join('');
+    },
+
+    get remainingGuesses() {
+        return this.guessesAllowed - (this.currentRowIndex + 1)
+    },
 
     init() {
         this.board = Array.from({length: this.guessesAllowed}, () => {
@@ -17,6 +29,8 @@ export default {
         if (/^[A-z]$/.test(key)) {
             this.fillTile(key);
             this.message = '';
+        } else if (key === 'Backspace') {
+            this.emptyTile();
         } else if (key === 'Enter') {
             this.submitGuess();
         }
@@ -32,41 +46,36 @@ export default {
         }
     },
 
-    get currentRow() {
-        return this.board[this.currentRowIndex];
-    },
+    emptyTile() {
+        for (let tile of [...this.currentRow].reverse()) {
+            if (tile.letter) {
+                tile.empty();
 
-    get currentGuess() {
-       return this.currentRow.map(tile => tile.letter).join('');
+                break;
+            }
+        }
     },
 
     submitGuess() {
-        let guess = this.currentGuess;
         if(this.currentGuess.length < this.theWord.length) {
             return;
         }
 
-        this.refreshCurrentStatusForCurrentRow();
-
-        if (guess === this.theWord) {
-            this.message = 'You win!';
-        } else if (this.guessesAllowed === this.currentRowIndex + 1) {
-            this.message = 'Game over';
-            this.state = 'complete';
-        } else {
-            this.message = 'One less try';
-            this.currentRowIndex++;
+        for (let tile of this.currentRow) {
+            tile.updateTile(this.theWord, this.currentGuess)
         }
+
+        if (this.currentGuess === this.theWord) {
+            this.state = 'complete';
+            return this.message = 'You win!';
+        }
+
+        if (this.remainingGuesses === 0) {
+            this.state = 'complete';
+            return this.message = 'Game over';
+        }
+
+        this.currentRowIndex++;
+        return this.message = 'One less try';
     },
-
-    refreshCurrentStatusForCurrentRow() {
-        this.currentRow.forEach((tile, index) => {
-
-            tile.status = this.theWord.includes(tile.letter) ? 'present' : 'absent';
-
-            if (this.currentGuess[index] === this.theWord[index]) {
-                tile.status = 'correct';
-            }
-        });
-    }
 }
