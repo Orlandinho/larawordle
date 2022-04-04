@@ -5074,6 +5074,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* binding */ Tile)
 /* harmony export */ });
+function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
@@ -5083,12 +5089,14 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 var Tile = /*#__PURE__*/function () {
-  function Tile() {
+  function Tile(position) {
     _classCallCheck(this, Tile);
 
     _defineProperty(this, "letter", '');
 
     _defineProperty(this, "status", '');
+
+    this.position = position;
   }
 
   _createClass(Tile, [{
@@ -5102,13 +5110,44 @@ var Tile = /*#__PURE__*/function () {
       this.letter = '';
     }
   }, {
-    key: "updateTile",
-    value: function updateTile(theWord, currentGuess) {
-      this.status = theWord.includes(this.letter) ? 'present' : 'absent';
-
-      if (currentGuess.indexOf(this.letter) === theWord.indexOf(this.letter)) {
-        this.status = 'correct';
+    key: "updateStatus",
+    value: function updateStatus(theWord) {
+      if (!theWord.includes(this.letter)) {
+        return this.status = 'absent';
       }
+
+      if (this.letter === theWord[this.position]) {
+        return this.status = 'correct';
+      }
+
+      return this.status = 'present';
+    }
+  }], [{
+    key: "updateStatusForRow",
+    value: function updateStatusForRow(row, theWord) {
+      var _iterator = _createForOfIteratorHelper(row),
+          _step;
+
+      try {
+        for (_iterator.s(); !(_step = _iterator.n()).done;) {
+          var tile = _step.value;
+          tile.updateStatus(theWord);
+        }
+      } catch (err) {
+        _iterator.e(err);
+      } finally {
+        _iterator.f();
+      }
+
+      row.filter(function (tile) {
+        return tile.status === 'present';
+      }).filter(function (tile) {
+        return row.some(function (t) {
+          return t.letter === tile.letter && t.status === 'correct';
+        });
+      }).forEach(function (tile) {
+        tile.status = 'absent';
+      });
     }
   }]);
 
@@ -5186,6 +5225,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var _Tile__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tile */ "./resources/js/Tile.js");
+/* harmony import */ var _names__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./names */ "./resources/js/names.js");
 function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
 
 function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
@@ -5201,11 +5241,13 @@ function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o =
 function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
 
+
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
-  theWord: 'davi',
+  theWord: _names__WEBPACK_IMPORTED_MODULE_1__["default"][Math.floor(Math.random() * _names__WEBPACK_IMPORTED_MODULE_1__["default"].length)],
   guessesAllowed: 3,
   currentRowIndex: 0,
   state: 'active',
+  errors: false,
   message: '',
 
   get currentRow() {
@@ -5230,8 +5272,8 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
     }, function () {
       return Array.from({
         length: _this.theWord.length
-      }, function () {
-        return new _Tile__WEBPACK_IMPORTED_MODULE_0__["default"]();
+      }, function (item, index) {
+        return new _Tile__WEBPACK_IMPORTED_MODULE_0__["default"](index);
       });
     });
   },
@@ -5241,6 +5283,8 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       this.message = '';
     } else if (key === 'Backspace') {
       this.emptyTile();
+      this.errors = false;
+      this.message = '';
     } else if (key === 'Enter') {
       this.submitGuess();
     }
@@ -5288,19 +5332,13 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       return;
     }
 
-    var _iterator3 = _createForOfIteratorHelper(this.currentRow),
-        _step3;
-
-    try {
-      for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
-        var tile = _step3.value;
-        tile.updateTile(this.theWord, this.currentGuess);
-      }
-    } catch (err) {
-      _iterator3.e(err);
-    } finally {
-      _iterator3.f();
+    if (!_names__WEBPACK_IMPORTED_MODULE_1__["default"].includes(this.currentGuess)) {
+      this.errors = true;
+      this.message = 'Not a biblical name';
+      return;
     }
+
+    _Tile__WEBPACK_IMPORTED_MODULE_0__["default"].updateStatusForRow(this.currentRow, this.theWord);
 
     if (this.currentGuess === this.theWord) {
       this.state = 'complete';
@@ -5316,6 +5354,21 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
     return this.message = 'One less try';
   }
 });
+
+/***/ }),
+
+/***/ "./resources/js/names.js":
+/*!*******************************!*\
+  !*** ./resources/js/names.js ***!
+  \*******************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (["adao", "caim", "abel", "davi", "joao", "levi", "deus", "jaco", "rute", "sara", "juda", "jose", "esau"]);
 
 /***/ }),
 

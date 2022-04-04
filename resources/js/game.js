@@ -1,10 +1,12 @@
 import Tile from "./Tile";
+import names from "./names";
 
 export default {
-    theWord: 'davi',
+    theWord: names[Math.floor(Math.random()*names.length)],
     guessesAllowed: 3,
     currentRowIndex: 0,
     state: 'active',
+    errors: false,
     message: '',
 
     get currentRow() {
@@ -21,7 +23,7 @@ export default {
 
     init() {
         this.board = Array.from({length: this.guessesAllowed}, () => {
-            return Array.from({length: this.theWord.length}, () => new Tile);
+            return Array.from({length: this.theWord.length}, (item, index) => new Tile(index));
         });
     },
 
@@ -31,6 +33,8 @@ export default {
             this.message = '';
         } else if (key === 'Backspace') {
             this.emptyTile();
+            this.errors = false;
+            this.message = '';
         } else if (key === 'Enter') {
             this.submitGuess();
         }
@@ -61,9 +65,13 @@ export default {
             return;
         }
 
-        for (let tile of this.currentRow) {
-            tile.updateTile(this.theWord, this.currentGuess)
+        if(! names.includes(this.currentGuess)) {
+            this.errors = true;
+            this.message = 'Not a biblical name';
+            return;
         }
+
+        Tile.updateStatusForRow(this.currentRow, this.theWord);
 
         if (this.currentGuess === this.theWord) {
             this.state = 'complete';
