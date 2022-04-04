@@ -12,12 +12,10 @@
         <script src="{{ asset("js/app.js") }}" defer></script>
     </head>
     <body>
-        <main x-data="game"
-             @keyup.window="onKeyPress($event.key)"
-        >
-            <h1 aria-label="Tony Wordle">
-                <img src="{{ asset('storage/images/tony.png') }}" alt="logo">
-            </h1>
+        <main x-data="game" @keyup.window="onKeyPress($event.key)">
+
+            <output x-text="message"></output>
+
             <div id="game">
                 <template x-for="(row, index) in board">
                     <div class="row" :class="{ 'current': currentRowIndex === index, 'invalid': currentRowIndex === index && errors }">
@@ -27,7 +25,17 @@
                     </div>
                 </template>
             </div>
-            <output x-text="message"></output>
+
+            <div id="keyboard" @click.stop="$event.target.matches('button') && onKeyPress($event.target.textContent)">
+                <template x-for="row in letters">
+                    <div id="row">
+                        <template x-for="key in row">
+                            <button type="button" :class="matchingTileForKey(key)?.status" class="key" x-text="key"></button>
+                        </template>
+                    </div>
+                </template>
+            </div>
+
         </main>
     </body>
 </html>

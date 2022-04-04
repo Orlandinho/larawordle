@@ -8,6 +8,11 @@ export default {
     state: 'active',
     errors: false,
     message: '',
+    letters: [
+        'QWERTYUIOP'.split(''),
+        'ASDFGHJKL'.split(''),
+        ['Enter', ...'ZXCVBNM'.split(''), 'Backspace']
+    ],
 
     get currentRow() {
         return this.board[this.currentRowIndex];
@@ -25,6 +30,16 @@ export default {
         this.board = Array.from({length: this.guessesAllowed}, () => {
             return Array.from({length: this.theWord.length}, (item, index) => new Tile(index));
         });
+    },
+
+    matchingTileForKey(key) {
+      return this.board
+          .flat()
+          .filter(tile => tile.status)
+          .sort((t1, t2) => {
+              return t2.status === 'correct'
+          })
+          .find(tile => tile.letter === key.toLowerCase())
     },
 
     onKeyPress(key) {
@@ -80,7 +95,7 @@ export default {
 
         if (this.remainingGuesses === 0) {
             this.state = 'complete';
-            return this.message = 'Game over';
+            return this.message = 'The right answer is ' + this.theWord;
         }
 
         this.currentRowIndex++;

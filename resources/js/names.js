@@ -13,5 +13,6 @@ export default
     "sara",
     "juda",
     "jose",
-    "esau"
+    "esau",
+    "amos",
 ]
