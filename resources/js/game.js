@@ -90,15 +90,13 @@ export default {
 
         if (this.currentGuess === this.theWord) {
             this.state = 'complete';
-            return this.message = 'You win!';
-        }
-
-        if (this.remainingGuesses === 0) {
+            this.message = 'You win!';
+        } else if (this.remainingGuesses === 0) {
             this.state = 'complete';
-            return this.message = 'The right answer is ' + this.theWord;
+            this.message = 'The right answer is ' + this.theWord;
+        } else {
+            this.currentRowIndex++
+            this.message = 'Try Again';
         }
-
-        this.currentRowIndex++;
-        return this.message = 'One less try';
     },
 }

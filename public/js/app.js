@@ -5125,29 +5125,61 @@ var Tile = /*#__PURE__*/function () {
   }], [{
     key: "updateStatusForRow",
     value: function updateStatusForRow(row, theWord) {
+      theWord = theWord.split(''); //check for correct letters
+
       var _iterator = _createForOfIteratorHelper(row),
           _step;
 
       try {
         for (_iterator.s(); !(_step = _iterator.n()).done;) {
           var tile = _step.value;
-          tile.updateStatus(theWord);
-        }
+
+          if (theWord[tile.position] === tile.letter) {
+            tile.status = 'correct';
+            theWord[tile.position] = null;
+          }
+        } //check for present letters
+
       } catch (err) {
         _iterator.e(err);
       } finally {
         _iterator.f();
       }
 
-      row.filter(function (tile) {
-        return tile.status === 'present';
-      }).filter(function (tile) {
-        return row.some(function (t) {
-          return t.letter === tile.letter && t.status === 'correct';
-        });
-      }).forEach(function (tile) {
-        tile.status = 'absent';
-      });
+      var _iterator2 = _createForOfIteratorHelper(row),
+          _step2;
+
+      try {
+        for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
+          var _tile = _step2.value;
+
+          if (theWord.includes(_tile.letter)) {
+            _tile.status = 'present';
+            theWord[theWord.indexOf(_tile.letter)] = null;
+          }
+        } //absent letters
+
+      } catch (err) {
+        _iterator2.e(err);
+      } finally {
+        _iterator2.f();
+      }
+
+      var _iterator3 = _createForOfIteratorHelper(row.filter(function (tile) {
+        return !tile.status;
+      })),
+          _step3;
+
+      try {
+        for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
+          var _tile2 = _step3.value;
+          _tile2.status = 'absent';
+        }
+      } catch (err) {
+        _iterator3.e(err);
+      } finally {
+        _iterator3.f();
+      }
     }
   }]);
 
@@ -5352,16 +5384,14 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 
     if (this.currentGuess === this.theWord) {
       this.state = 'complete';
-      return this.message = 'You win!';
-    }
-
-    if (this.remainingGuesses === 0) {
+      this.message = 'You win!';
+    } else if (this.remainingGuesses === 0) {
       this.state = 'complete';
-      return this.message = 'The right answer is ' + this.theWord;
+      this.message = 'The right answer is ' + this.theWord;
+    } else {
+      this.currentRowIndex++;
+      this.message = 'Try Again';
     }
-
-    this.currentRowIndex++;
-    return this.message = 'One less try';
   }
 });
 
