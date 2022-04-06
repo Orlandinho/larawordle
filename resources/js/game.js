@@ -1,17 +1,24 @@
 import Tile from "./Tile";
 import names from "./names";
 
+let today = new Date().toLocaleDateString('pt-BR', {day: '2-digit', month: '2-digit'})
+let wotd = names.data.filter(name => {
+    return name.day === today
+})
+
+// theWord: names.data[Math.floor(Math.random()*names.data.length)],
 export default {
-    theWord: names[Math.floor(Math.random()*names.length)],
-    guessesAllowed: 3,
+    //theWord: wotd[0],
+    theWord: names.data[Math.floor(Math.random()*names.data.length)],
+    guessesAllowed: 5,
     currentRowIndex: 0,
     state: 'active',
     errors: false,
     message: '',
     letters: [
-        'QWERTYUIOP'.split(''),
-        'ASDFGHJKL'.split(''),
-        ['Enter', ...'ZXCVBNM'.split(''), 'Backspace']
+        'qwertyuiop'.split(''),
+        'asdfghjkl'.split(''),
+        ['Enter', ...'zxcvbnm'.split(''), 'Backspace']
     ],
 
     get currentRow() {
@@ -28,7 +35,7 @@ export default {
 
     init() {
         this.board = Array.from({length: this.guessesAllowed}, () => {
-            return Array.from({length: this.theWord.length}, (item, index) => new Tile(index));
+            return Array.from({length: this.theWord.name.length}, (item, index) => new Tile(index));
         });
     },
 
@@ -57,7 +64,7 @@ export default {
 
     fillTile(key) {
         for (let tile of this.currentRow) {
-            if (!tile.letter) {
+            if (! tile.letter) {
                 tile.letter = key;
 
                 break;
@@ -76,27 +83,26 @@ export default {
     },
 
     submitGuess() {
-        if(this.currentGuess.length < this.theWord.length) {
+        if(this.currentGuess.length < this.theWord.name.length) {
             return;
         }
 
-        if(! names.includes(this.currentGuess)) {
+        if(! names.data.find( data => data.name === this.currentGuess)) {
             this.errors = true;
-            this.message = 'Not a biblical name';
+            this.message = 'Nome inválido ou não consta na base de dados ainda';
             return;
         }
 
-        Tile.updateStatusForRow(this.currentRow, this.theWord);
+        Tile.updateStatusForRow(this.currentRow, this.theWord.name);
 
-        if (this.currentGuess === this.theWord) {
+        if (this.currentGuess === this.theWord.name) {
             this.state = 'complete';
-            this.message = 'You win!';
+            this.message = 'Parabéns! O nome pode ser encontrado em ' + this.theWord.ref;
         } else if (this.remainingGuesses === 0) {
             this.state = 'complete';
-            this.message = 'The right answer is ' + this.theWord;
+            this.message = 'A resposta correta é ' + this.theWord.name.toUpperCase() + '. Referencia: ' + this.theWord.ref;
         } else {
             this.currentRowIndex++
-            this.message = 'Try Again';
         }
     },
 }

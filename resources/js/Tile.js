@@ -13,18 +13,6 @@ export default class Tile {
         this.letter = ''
     }
 
-    updateStatus(theWord) {
-        if (! theWord.includes(this.letter)) {
-            return this.status = 'absent';
-        }
-
-        if (this.letter === theWord[this.position]) {
-            return this.status = 'correct'
-        }
-
-        return this.status = 'present'
-    }
-
     static updateStatusForRow(row, theWord) {
         theWord = theWord.split('')
 
@@ -38,9 +26,9 @@ export default class Tile {
         }
 
         //check for present letters
-        for (let tile of row) {
+        for (let tile of row.filter(tile => ! tile.status)) {
             if (theWord.includes(tile.letter)) {
-                tile.status = 'present';
+                tile.status = "present";
 
                 theWord[theWord.indexOf(tile.letter)] = null;
             }
